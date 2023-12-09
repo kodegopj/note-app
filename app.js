@@ -5,6 +5,7 @@ import noteRouter from "./routes/noteRouter.js";
 import unknownEndpoint from "./utils/unknownEndpoint.js";
 import connectToDB from "./utils/connectToDB.js";
 import dotenv from "dotenv";
+import errorHandler from "./middlewares/errorHandler.js";
 
 dotenv.config();
 
@@ -25,5 +26,6 @@ app.use(morgan(":method :url :status :body"));
 app.use("/notes", noteRouter);
 
 app.use(unknownEndpoint);
+app.use(errorHandler);
 
 export default app;
