@@ -2,14 +2,13 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import noteRouter from "./routes/noteRouter.js";
-import unknownEndpoint from "./utils/unknownEndpoint.js";
+import userRouter from "./routes/userRouter.js";
+import unknownEndpoint from "./middlewares/unknownEndpoint.js";
 import connectToDB from "./utils/connectToDB.js";
-import dotenv from "dotenv";
 import errorHandler from "./middlewares/errorHandler.js";
+import config from "./utils/config.js";
 
-dotenv.config();
-
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = config.MONGODB_URI;
 const app = express();
 
 connectToDB(MONGODB_URI);
@@ -23,6 +22,7 @@ app.use(express.json());
 app.use(express.static("dist"));
 app.use(morgan(":method :url :status :body"));
 
+app.use("/users", userRouter);
 app.use("/notes", noteRouter);
 
 app.use(unknownEndpoint);

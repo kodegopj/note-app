@@ -1,5 +1,5 @@
 export default function errorHandler(error, req, res, next) {
-  console.error(error.message);
+  console.error(error.name);
 
   if (error.name === "CastError") {
     return res.status(400).json({ error: "malformatted id" });
