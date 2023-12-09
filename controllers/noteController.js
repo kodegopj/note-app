@@ -1,4 +1,7 @@
 import Note from "../models/Note.js";
+import jwt from "jsonwebtoken";
+import getTokenFrom from "../utils/getTokenFrom.js";
+import config from "../utils/config.js";
 import User from "../models/User.js";
 
 async function getNotesInfo(_, res, next) {
@@ -49,20 +52,25 @@ async function deleteNote(req, res, next) {
 
 async function createNote(req, res, next) {
   const body = req.body;
-
-  const user = await User.findById(body.userId);
-
-  if (!body.content) {
-    return res.status(400).json({ error: "content missing" });
-  }
-
-  const note = new Note({
-    content: body.content,
-    important: body.important || false,
-    userId: user.id,
-  });
-
   try {
+    const decodedToken = jwt.verify(getTokenFrom(req), config.JWT_SECRET);
+
+    if (!decodedToken.id) {
+      return res.status(401).json({ error: "token invalid" });
+    }
+
+    const user = await User.findById(decodedToken.id);
+
+    if (!body.content) {
+      return res.status(400).json({ error: "content missing" });
+    }
+
+    const note = new Note({
+      content: body.content,
+      important: body.important || false,
+      userId: user.id,
+    });
+
     const savedNote = await note.save().then((result) => result);
 
     user.notes = user.notes.concat(savedNote._id);
