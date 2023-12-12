@@ -48,7 +48,7 @@ async function loginUser(req, res, next) {
   };
 
   const token = jwt.sign(userForToken, config.JWT_SECRET, {
-    expiresIn: 60,
+    expiresIn: 60 * 60,
   });
 
   return res
